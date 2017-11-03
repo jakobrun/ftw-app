@@ -1,4 +1,5 @@
 'use strict'
+// @flow
 import React, { Component } from 'react'
 import { View, Text, Button, WebView, Image } from 'react-native'
 import { styles } from './modules/shared/styles'
