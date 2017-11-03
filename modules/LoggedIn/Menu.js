@@ -1,6 +1,5 @@
 'use strict'
 // @flow
-import { Constants } from 'expo'
 import {
     gql,
     ApolloClient,
@@ -9,6 +8,7 @@ import {
     graphql,
 } from 'react-apollo'
 import React from 'react'
+import moment from 'moment'
 import { styles } from '../shared/styles'
 import {
     View,
@@ -21,75 +21,55 @@ import {
 } from 'react-native'
 
 const localStyles = StyleSheet.create({
-    title: {
-        fontSize: 24,
-        margin: 20,
-        marginBottom: 0,
-    },
-    container: {
-        flex: 1,
-        paddingTop: Constants.statusBarHeight,
-        backgroundColor: '#ecf0f1',
-    },
-    learnMore: {
-        margin: 20,
-        marginTop: 0,
-    },
-    loading: {
-        margin: 50,
-    },
     list: {
         marginBottom: 20,
     },
-    fullApp: {
-        marginBottom: 20,
+    listItem: {
+        backgroundColor: '#fff',
+        padding: 32,
+        marginTop: 1,
+    },
+    listItemDate: {
+        fontSize: 16,
+        paddingBottom: 16,
+        textAlign: 'center',
+    },
+    listItemDinner: {
+        fontSize: 24,
         textAlign: 'center',
     },
 })
 
-const FeedList = ({ data }) => {
-    console.log('data', data)
-    if (data.networkStatus === 1) {
-        return <ActivityIndicator style={localStyles.loading} />
-    }
-
+const MenuView = ({ data }) => {
     if (data.error) {
-        return <Text>Error! {data.error.message}</Text>
+        console.log('err', data.error.status)
+        return (
+            <View style={styles.container}>
+                <Text>Error! {data.error.message}</Text>
+            </View>
+        )
     }
-
     return (
-        <FlatList
-            renderItem={() => {
-                return (
-                    <ListItem
-                        hideChevron
-                        title={`${item.date} ${item.dinner
-                            ? item.dinner.name
-                            : '-'}`}
-                        subtitle={''}
-                    />
-                )
-            }}
-        />
+        <View style={styles.container}>
+            <FlatList
+                data={data.dayMenu}
+                keyExtractor={item => item.date}
+                onRefresh={data.refetch}
+                refreshing={data.networkStatus === 4}
+                renderItem={({ item }) => (
+                    <View style={localStyles.listItem}>
+                        <Text style={localStyles.listItemDate}>
+                            {moment(item.date).format('dddd, MMM Do')}
+                        </Text>
+                        <Text style={localStyles.listItemDinner}>
+                            {item.dinner ? item.dinner.name : '-'}
+                        </Text>
+                    </View>
+                )}
+            />
+        </View>
     )
 }
-const MenuView = ({ data }) => (
-    <View style={styles.container}>
-        <FlatList
-            data={data.dayMenu}
-            keyExtractor={item => item.date}
-            onRefresh={data.refetch}
-            refreshing={data.networkStatus === 4}
-            renderItem={({ item }) => (
-                <View>
-                    <Text>
-                        {item.date}: {item.dinner ? item.dinner.name : '-'}
-                    </Text>
-                </View>
-            )}
-        />
-    </View>
-)
 
 export const MenuWithData = graphql(
     gql`
