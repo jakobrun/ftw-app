@@ -1,6 +1,6 @@
 import React from 'react'
 import { styles } from '../shared/styles'
-import { gql, graphql } from 'react-apollo'
+import { gql, graphql, compose } from 'react-apollo'
 import {
     View,
     Text,
@@ -26,7 +26,22 @@ const localStyles = StyleSheet.create({
         textAlign: 'center',
     },
 })
-export const SelectDinnerView = ({ navigation, data }) => (
+const selectDinner = (mutate, navigation, food) => {
+    mutate({
+        variables: {
+            date: navigation.state.params.date,
+            foodId: food.id,
+        },
+    })
+        .then(() => {
+            console.log('success!!!')
+            navigation.goBack()
+        })
+        .catch(() => {
+            console.log('error')
+        })
+}
+export const SelectDinnerView = ({ navigation, data, mutate }) => (
     <View style={styles.container}>
         <Text>Select dinner {navigation.state.params.date}</Text>
         <FlatList
@@ -35,7 +50,9 @@ export const SelectDinnerView = ({ navigation, data }) => (
             onRefresh={data.refetch}
             refreshing={data.networkStatus === 4}
             renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => navigation.goBack()}>
+                <TouchableOpacity
+                    onPress={() => selectDinner(mutate, navigation, item)}
+                >
                     <View style={localStyles.listItem}>
                         <Text style={localStyles.listItemText}>
                             {item.name}
@@ -47,14 +64,23 @@ export const SelectDinnerView = ({ navigation, data }) => (
     </View>
 )
 
-export const SelectDinner = graphql(
-    gql`
-        {
-            food {
-                id
-                name
+export const SelectDinner = compose(
+    graphql(
+        gql`
+            {
+                food {
+                    id
+                    name
+                }
+            }
+        `,
+        { options: { notifyOnNetworkStatusChange: true } }
+    ),
+    graphql(gql`
+        mutation SelectDinner($date: String!, $foodId: String!) {
+            selectDinner(date: $date, foodId: $foodId) {
+                success
             }
         }
-    `,
-    { options: { notifyOnNetworkStatusChange: true } }
+    `)
 )(SelectDinnerView)
