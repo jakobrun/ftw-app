@@ -1,12 +1,6 @@
 'use strict'
 // @flow
-import {
-    gql,
-    ApolloClient,
-    createNetworkInterface,
-    ApolloProvider,
-    graphql,
-} from 'react-apollo'
+import { gql, graphql } from 'react-apollo'
 import React from 'react'
 import moment from 'moment'
 import { styles } from '../shared/styles'
@@ -16,6 +10,7 @@ import {
     FlatList,
     ActivityIndicator,
     RefreshControl,
+    TouchableOpacity,
     StyleSheet,
     ScrollView,
 } from 'react-native'
@@ -40,9 +35,8 @@ const localStyles = StyleSheet.create({
     },
 })
 
-const MenuView = ({ data }) => {
+const MenuView = ({ data, navigation }) => {
     if (data.error) {
-        console.log('err', data.error.status)
         return (
             <View style={styles.container}>
                 <Text>Error! {data.error.message}</Text>
@@ -57,21 +51,28 @@ const MenuView = ({ data }) => {
                 onRefresh={data.refetch}
                 refreshing={data.networkStatus === 4}
                 renderItem={({ item }) => (
-                    <View style={localStyles.listItem}>
-                        <Text style={localStyles.listItemDate}>
-                            {moment(item.date).format('dddd, MMM Do')}
-                        </Text>
-                        <Text style={localStyles.listItemDinner}>
-                            {item.dinner ? item.dinner.name : '-'}
-                        </Text>
-                    </View>
+                    <TouchableOpacity
+                        onPress={() =>
+                            navigation.navigate('SelectDinner', {
+                                date: item.date,
+                            })}
+                    >
+                        <View style={localStyles.listItem}>
+                            <Text style={localStyles.listItemDate}>
+                                {moment(item.date).format('dddd, MMM Do')}
+                            </Text>
+                            <Text style={localStyles.listItemDinner}>
+                                {item.dinner ? item.dinner.name : '-'}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
                 )}
             />
         </View>
     )
 }
 
-export const MenuWithData = graphql(
+export const Menu = graphql(
     gql`
         {
             dayMenu(from: "2017-10-31", to: "2017-11-10") {
@@ -85,15 +86,3 @@ export const MenuWithData = graphql(
     `,
     { options: { notifyOnNetworkStatusChange: true } }
 )(MenuView)
-
-const client = new ApolloClient({
-    networkInterface: createNetworkInterface({
-        uri: 'https://ftw-app.herokuapp.com/graphql',
-    }),
-})
-
-export const Menu = () => (
-    <ApolloProvider client={client}>
-        <MenuWithData />
-    </ApolloProvider>
-)

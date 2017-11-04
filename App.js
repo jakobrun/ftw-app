@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import { View, Text, Button, WebView, Image } from 'react-native'
 import { styles } from './modules/shared/styles'
-import { Menu } from './modules/LoggedIn/Menu'
+import { LoggedIn } from './modules/LoggedIn'
 // Change these to reflect
 const LOGIN_URL = 'https://ftw-app.herokuapp.com/login/facebook'
 const LOGIN_SUCCESS_URL = 'https://ftw-app.herokuapp.com/login/facebook/return'
@@ -78,7 +78,7 @@ export default class App extends Component {
         // If we have completed loading the cookie choose to show Login WebView or the LoggedIn component, else just show an empty View.
         if (this.state.loadedCookie) {
             if (this.state.user) {
-                return <Menu user={this.state.user} />
+                return <LoggedIn />
             } else {
                 return (
                     <View style={[styles.container]}>
