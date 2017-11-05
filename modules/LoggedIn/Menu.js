@@ -72,17 +72,28 @@ const MenuView = ({ data, navigation }) => {
     )
 }
 
-export const Menu = graphql(
-    gql`
-        {
-            dayMenu(from: "2017-10-31", to: "2017-11-10") {
-                date
-                dinner {
-                    id
-                    name
-                }
+export const getDayMeny = gql`
+    query GetDayMenu($from: String!, $to: String!) {
+        dayMenu(from: $from, to: $to) {
+            date
+            dinner {
+                id
+                name
             }
         }
-    `,
-    { options: { notifyOnNetworkStatusChange: true } }
-)(MenuView)
+    }
+`
+
+export const Menu = graphql(getDayMeny, {
+    options: () => ({
+        variables: {
+            from: moment()
+                .subtract(5, 'days')
+                .format('YYYY-MM-DD'),
+            to: moment()
+                .add(5, 'days')
+                .format('YYYY-MM-DD'),
+        },
+        notifyOnNetworkStatusChange: true,
+    }),
+})(MenuView)
