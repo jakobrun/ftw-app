@@ -1,6 +1,7 @@
 'use strict'
 // @flow
-import { gql, graphql } from 'react-apollo'
+import gql from 'graphql-tag'
+import { graphql } from 'react-apollo'
 import React from 'react'
 import moment from 'moment'
 import { styles } from '../shared/styles'
@@ -72,7 +73,7 @@ const MenuView = ({ data, navigation }) => {
     )
 }
 
-export const getDayMeny = gql`
+export const getDayMenu = gql`
     query GetDayMenu($from: String!, $to: String!) {
         dayMenu(from: $from, to: $to) {
             date
@@ -84,7 +85,7 @@ export const getDayMeny = gql`
     }
 `
 
-export const Menu = graphql(getDayMeny, {
+export const Menu = graphql(getDayMenu, {
     options: () => ({
         variables: {
             from: moment()

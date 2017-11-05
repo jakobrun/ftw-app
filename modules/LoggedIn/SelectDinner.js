@@ -1,6 +1,7 @@
 import React from 'react'
 import { styles } from '../shared/styles'
-import { gql, graphql, compose } from 'react-apollo'
+import gql from 'graphql-tag'
+import { graphql, compose } from 'react-apollo'
 import {
     View,
     Text,
@@ -11,6 +12,7 @@ import {
     StyleSheet,
     ScrollView,
 } from 'react-native'
+import { getDayMenu } from './Menu'
 
 const localStyles = StyleSheet.create({
     list: {
@@ -32,6 +34,15 @@ const selectDinner = (mutate, navigation, food) => {
             date: navigation.state.params.date,
             foodId: food.id,
         },
+        refetchQueries: [
+            {
+                query: getDayMenu,
+                variables: {
+                    from: navigation.state.params.date,
+                    to: navigation.state.params.date,
+                },
+            },
+        ],
     })
         .then(() => {
             console.log('success!!!')
