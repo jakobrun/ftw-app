@@ -6,11 +6,9 @@ import {
     View,
     Text,
     FlatList,
+    Button,
     TouchableOpacity,
-    ActivityIndicator,
-    RefreshControl,
     StyleSheet,
-    ScrollView,
 } from 'react-native'
 import { getDayMenu } from './Menu'
 
@@ -52,6 +50,15 @@ const selectDinner = (mutate, navigation, food) => {
             console.log('error')
         })
 }
+
+export const AddFoodButton = ({ navigation }) => (
+    <Button
+        style={localStyles.addFoodBtn}
+        title="Add"
+        onPress={() => navigation.navigate('AddFood')}
+    />
+)
+
 export const SelectDinnerView = ({ navigation, data, mutate }) => (
     <View style={styles.container}>
         <Text>Select dinner {navigation.state.params.date}</Text>
@@ -74,19 +81,16 @@ export const SelectDinnerView = ({ navigation, data, mutate }) => (
         />
     </View>
 )
-
+export const getFood = gql`
+    {
+        food {
+            id
+            name
+        }
+    }
+`
 export const SelectDinner = compose(
-    graphql(
-        gql`
-            {
-                food {
-                    id
-                    name
-                }
-            }
-        `,
-        { options: { notifyOnNetworkStatusChange: true } }
-    ),
+    graphql(getFood, { options: { notifyOnNetworkStatusChange: true } }),
     graphql(gql`
         mutation SelectDinner($date: String!, $foodId: String!) {
             selectDinner(date: $date, foodId: $foodId) {

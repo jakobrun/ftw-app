@@ -9,11 +9,8 @@ import {
     View,
     Text,
     FlatList,
-    ActivityIndicator,
-    RefreshControl,
     TouchableOpacity,
     StyleSheet,
-    ScrollView,
 } from 'react-native'
 
 const localStyles = StyleSheet.create({

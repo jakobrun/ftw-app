@@ -1,11 +1,13 @@
 import React from 'react'
 import { StackNavigator } from 'react-navigation'
 import { Menu } from './Menu'
-import { SelectDinner } from './SelectDinner'
+import { SelectDinner, AddFoodButton } from './SelectDinner'
+import { AddFood } from './AddFood'
 import { ApolloClient } from 'apollo-client'
 import { ApolloProvider } from 'react-apollo'
 import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
+import { Text } from 'react-native'
 
 const client = new ApolloClient({
     link: new HttpLink({
@@ -26,8 +28,15 @@ const Nav = StackNavigator(
         },
         SelectDinner: {
             screen: SelectDinner,
+            navigationOptions: ({ navigation }) => ({
+                headerTitle: 'Select Dinner',
+                headerRight: AddFoodButton({ navigation }),
+            }),
+        },
+        AddFood: {
+            screen: AddFood,
             navigationOptions: {
-                headerTitle: 'Select dinner',
+                headerTitle: 'Add Food',
             },
         },
     },
