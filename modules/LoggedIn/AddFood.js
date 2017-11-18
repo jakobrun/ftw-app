@@ -53,7 +53,11 @@ export class AddFoodView extends React.Component {
                     onChangeText={name => this.setState({ name })}
                     value={this.state.name}
                 />
-                <Button title="Save" onPress={this.insertFood} />
+                <Button
+                    title="Save"
+                    onPress={this.insertFood}
+                    disabled={!this.state.name}
+                />
             </View>
         )
     }
